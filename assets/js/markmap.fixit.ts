@@ -1,24 +1,103 @@
+type MarkmapInstance = {
+  svg?: unknown;
+  fit?: () => void;
+};
+
+type MarkmapFactory = {
+  create: (...args: any[]) => MarkmapInstance;
+  __fixitMarkmapCreatePatched?: boolean;
+};
+
+type ToolbarItem = {
+  id: string;
+  title: string;
+  content: unknown;
+  onClick: () => void;
+};
+
+type ToolbarInstance = {
+  items: string[];
+  setBrand: (value: boolean) => void;
+  setItems: (items: string[]) => void;
+  register: (item: ToolbarItem) => void;
+};
+
+type ToolbarFactory = {
+  create: (mm: MarkmapInstance) => ToolbarInstance;
+  icon: (path: string) => unknown;
+  __fixitMarkmapToolbarPatched?: boolean;
+};
+
+type FixIt = {
+  isDark?: boolean;
+  switchThemeEventSet?: {
+    add: (listener: (isDark: boolean) => void) => void;
+  };
+};
+
+type MarkmapAutoLoader = {
+  toolbar?: boolean;
+  onReady?: () => void;
+  provider?: string | ((path: string) => string);
+};
+
+type MarkmapNamespace = {
+  autoLoader?: MarkmapAutoLoader;
+  Markmap?: MarkmapFactory;
+  Toolbar?: ToolbarFactory;
+};
+
+interface Window {
+  markmap?: MarkmapNamespace;
+  fixit?: FixIt;
+}
+
+interface DocumentEventMap {
+  webkitfullscreenchange: Event;
+}
+
+interface Element {
+  __markmap?: MarkmapInstance;
+}
+
+interface HTMLElement {
+  __fixitSplitInited?: boolean;
+}
+
 (() => {
-  window.markmap = window.markmap || {};
-  window.markmap.autoLoader = Object.assign({}, window.markmap.autoLoader, {
+  const markmap = (window.markmap = window.markmap || {});
+  const autoLoader = (markmap.autoLoader = markmap.autoLoader || {});
+  markmap.autoLoader = Object.assign({}, autoLoader, {
+    provider: autoLoader.provider ?? 'unpkg',
     toolbar: true,
     onReady: () => {
       const fixit = window.fixit;
       if (fixit) {
         document.documentElement.classList.toggle('markmap-dark', !!fixit.isDark);
-        fixit.switchThemeEventSet && fixit.switchThemeEventSet.add((isDark) => {
+        fixit.switchThemeEventSet && fixit.switchThemeEventSet.add((isDark: boolean) => {
           document.documentElement.classList.toggle('markmap-dark', isDark);
         });
       }
 
-      const Markmap = window.markmap?.Markmap;
+      const getSvgElement = (mm: MarkmapInstance | null | undefined): SVGElement | null => {
+        const svgLike = (mm as { svg?: unknown } | null | undefined)?.svg as unknown;
+        if (!svgLike) return null;
+        const svgNode = (svgLike as { node?: unknown } | null | undefined)?.node;
+        const el =
+          typeof svgNode === 'function'
+            ? (svgNode as (this: unknown) => unknown).call(svgLike)
+            : svgLike;
+        return el instanceof SVGElement ? el : null;
+      };
+
+      const Markmap = markmap.Markmap;
       if (Markmap && !Markmap.__fixitMarkmapCreatePatched) {
         Markmap.__fixitMarkmapCreatePatched = true;
         const originalCreate = Markmap.create;
-        Markmap.create = (...args) => {
+        Markmap.create = (...args: any[]) => {
           const mm = originalCreate(...args);
           try {
-            const svg = mm?.svg;
+            const svg = getSvgElement(mm);
             const container =
               svg?.closest?.('.markmap') ||
               svg?.parentElement?.closest?.('.markmap');
@@ -29,7 +108,7 @@
         };
       }
 
-      const Toolbar = window.markmap?.Toolbar;
+      const Toolbar = markmap.Toolbar;
       if (Toolbar && !Toolbar.__fixitMarkmapToolbarPatched) {
         Toolbar.__fixitMarkmapToolbarPatched = true;
 
@@ -37,12 +116,9 @@
         const ICON_FULLSCREEN_EXIT = 'M6.4 5L10 8.6 13.6 5 15 6.4 11.4 10 15 13.6 13.6 15 10 11.4 6.4 15 5 13.6 8.6 10 5 6.4z';
 
         const create = Toolbar.create;
-        Toolbar.create = (mm) => {
+        Toolbar.create = (mm: MarkmapInstance) => {
           const tb = create(mm);
-          const svg =
-            mm?.svg?.node?.() ||
-            mm?.svg ||
-            null;
+          const svg = getSvgElement(mm);
           const container =
             svg?.closest?.('.markmap') ||
             svg?.parentElement?.closest?.('.markmap') ||
@@ -50,7 +126,7 @@
             svg ||
             null;
           tb.setBrand(false);
-          tb.setItems(tb.items.filter((i) => i !== 'dark' && i !== 'fullscreen' && i !== 'fullscreen-exit'));
+          tb.setItems(tb.items.filter((i: string) => i !== 'dark' && i !== 'fullscreen' && i !== 'fullscreen-exit'));
 
           const getFullscreenState = () =>
             !!container && (container.classList.contains('is-fullscreen') || document.fullscreenElement === container);
@@ -60,9 +136,9 @@
             const shouldShowExit = getFullscreenState();
             const desired = shouldShowExit ? 'fullscreen-exit' : 'fullscreen';
             const other = shouldShowExit ? 'fullscreen' : 'fullscreen-exit';
-            const nextItems = tb.items.map((i) => (i === other ? desired : i));
+            const nextItems = tb.items.map((i: string) => (i === other ? desired : i));
             if (!nextItems.includes(desired)) nextItems.push(desired);
-            tb.setItems(nextItems.filter((i, idx) => nextItems.indexOf(i) === idx));
+            tb.setItems(nextItems.filter((i: string, idx: number) => nextItems.indexOf(i) === idx));
           };
 
           const toggleFullscreen = () => {
@@ -74,7 +150,20 @@
                 document.body.style.overflow = '';
                 document.body.style.touchAction = '';
               } else if (document.fullscreenElement === container) {
-                document.exitFullscreen();
+                if (typeof document.exitFullscreen === 'function') {
+                  const p = document.exitFullscreen();
+                  if (p && typeof (p as Promise<void>).catch === 'function') {
+                    (p as Promise<void>).catch(() => {
+                      container.classList.remove('is-fullscreen');
+                      document.body.style.overflow = '';
+                      document.body.style.touchAction = '';
+                    });
+                  }
+                } else {
+                  container.classList.remove('is-fullscreen');
+                  document.body.style.overflow = '';
+                  document.body.style.touchAction = '';
+                }
               }
             };
 
@@ -85,7 +174,15 @@
             }
 
             if (document.fullscreenEnabled && container.requestFullscreen) {
-              container.requestFullscreen();
+              const p = container.requestFullscreen();
+              if (p && typeof (p as Promise<void>).catch === 'function') {
+                (p as Promise<void>).catch(() => {
+                  container.classList.add('is-fullscreen');
+                  document.body.style.overflow = 'hidden';
+                  document.body.style.touchAction = 'none';
+                  setFullscreenButton();
+                });
+              }
               return;
             }
 
@@ -116,20 +213,20 @@
         };
       }
 
-      const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+      const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-      const fitMarkmap = (root) => {
-        const el = root?.querySelector?.('.markmap');
-        const mm = el?.__markmap || el?.querySelector?.('svg')?.__markmap;
+      const fitMarkmap = (root: ParentNode) => {
+        const el = root.querySelector<HTMLElement>('.markmap');
+        const mm = el?.__markmap || el?.querySelector<SVGElement>('svg')?.__markmap;
         if (mm?.fit) mm.fit();
       };
 
-      const initSplit = (split) => {
+      const initSplit = (split: HTMLElement) => {
         if (!split || split.__fixitSplitInited) return;
         split.__fixitSplitInited = true;
 
-        const divider = split.querySelector('.markmap-divider');
-        const mapPane = split.querySelector('.markmap-pane--map');
+        const divider = split.querySelector<HTMLElement>('.markmap-divider');
+        const mapPane = split.querySelector<HTMLElement>('.markmap-pane--map');
         if (!divider || !mapPane) return;
 
         const storageKey = `fixit-markmap-split:${location.pathname}`;
@@ -146,7 +243,7 @@
         const mediaQuery = window.matchMedia('(max-width: 960px)');
         if (!mediaQuery.matches) applyRatio();
 
-        const setWidthFromClientX = (clientX) => {
+        const setWidthFromClientX = (clientX: number) => {
           const rect = split.getBoundingClientRect();
           const dividerRect = divider.getBoundingClientRect();
           const contentWidth = clamp(clientX - rect.left, 320, rect.width - dividerRect.width - 320);
@@ -177,7 +274,7 @@
           persistRatio();
         };
 
-        divider.addEventListener('pointerdown', (e) => {
+        divider.addEventListener('pointerdown', (e: PointerEvent) => {
           if (mediaQuery.matches) return;
           dragging = true;
           divider.classList.add('is-dragging');
@@ -189,7 +286,7 @@
           setWidthFromClientX(e.clientX);
         });
 
-        divider.addEventListener('pointermove', (e) => {
+        divider.addEventListener('pointermove', (e: PointerEvent) => {
           if (!dragging) return;
           setWidthFromClientX(e.clientX);
         });
@@ -198,7 +295,7 @@
         divider.addEventListener('pointercancel', () => stopDragging());
         divider.addEventListener('lostpointercapture', () => stopDragging());
 
-        divider.addEventListener('keydown', (e) => {
+        divider.addEventListener('keydown', (e: KeyboardEvent) => {
           if (mediaQuery.matches) return;
           const rect = split.getBoundingClientRect();
           const dividerWidth = divider.getBoundingClientRect().width;
@@ -226,7 +323,7 @@
         });
       };
 
-      document.querySelectorAll('[data-markmap-split]').forEach(initSplit);
+      document.querySelectorAll<HTMLElement>('[data-markmap-split]').forEach(initSplit);
     },
   });
 })();
