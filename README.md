@@ -157,7 +157,7 @@ markmap:
 
 ## 参考
 
-- [markmap 完整用法示例](markmap.md)
+- [markmap 完整用法示例](./markmap.md)
 - [markmap 官网](https://markmap.js.org/)
 - [开发主题组件 | FixIt](https://fixit.lruihao.cn/contributing/components/)
 - [如何开发 Hugo 主题组件 | FixIt](https://fixit.lruihao.cn/components/dev-component/)

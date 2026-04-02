@@ -155,7 +155,7 @@ layout: markmap
 
 ## References
 
-- [Full Usage Example](markmap.md)
+- [Full Usage Example](./markmap.md)
 - [markmap Official Website](https://markmap.js.org/)
 - [Develop Theme Components | FixIt](https://fixit.lruihao.cn/contributing/components/)
 - [How to Develop a Hugo Theme Component | FixIt](https://fixit.lruihao.cn/components/dev-component/)
