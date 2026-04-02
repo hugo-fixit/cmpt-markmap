@@ -1,6 +1,8 @@
 <!-- markdownlint-disable-file MD033 MD041 -->
 <h1 align="center">cmpt-markmap | FixIt</h1>
 
+![cmpt-markmap](https://github.com/user-attachments/assets/9e4f715f-4044-467a-a577-53a666c23a63)
+
 <div align="center" class="ignore">
   <p>A Hugo component that brings <a href="https://markmap.js.org/">markmap</a> mind map support to the FixIt theme.</p>
   <a href="/README.md">简体中文</a> |
@@ -24,8 +26,7 @@
 
 ## Requirements
 
-- Hugo v0.147.7 extended or later.
-- FixIt v0.4.0 or later.
+- FixIt v0.4.5 or later.
 
 ## Install Component
 
@@ -106,7 +107,7 @@ Use a fenced code block with the `markmap` language identifier in any Markdown f
 
 Set `layout: markmap` in the page Front Matter to enable the dedicated split-pane mind map layout:
 
-```yaml
+```markdown
 ---
 title: My Mind Map
 layout: markmap

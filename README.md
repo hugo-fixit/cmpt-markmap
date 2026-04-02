@@ -1,6 +1,8 @@
 <!-- markdownlint-disable-file MD033 MD041 -->
 <h1 align="center">cmpt-markmap | FixIt</h1>
 
+![cmpt-markmap](https://github.com/user-attachments/assets/9e4f715f-4044-467a-a577-53a666c23a63)
+
 <div align="center" class="ignore">
   <p>一个为 FixIt 主题提供 <a href="https://markmap.js.org/">markmap</a> 思维导图支持的 Hugo 组件。</p>
   简体中文 |
@@ -24,8 +26,7 @@
 
 ## 要求
 
-- Hugo v0.147.7 extended 或更高版本
-- FixIt v0.4.0 或更高版本
+- FixIt v0.4.5 或更高版本
 
 ## 安装组件
 
@@ -106,7 +107,7 @@ assets = [
 
 在页面 Front Matter 中设置 `layout: markmap`，即可启用专属的分栏思维导图页面布局：
 
-```md
+```markdown
 ---
 title: 我的思维导图
 layout: markmap
