@@ -15,7 +15,10 @@
   {{- end -}}
   {{- dict "Source" "js/markmap.fixit.ts" "Build" $options "Fingerprint" $fingerprint "Defer" true | dict "Page" . "Data" | partial "store/script.html" -}}
 
-  {{- /* markmap-autoloader.js */ -}}
+  {{- /*
+    markmap-autoloader
+    from cdn: https://cdn.jsdelivr.net/npm/markmap-autoloader
+  */ -}}
   {{- $source := $cdn.markmapAutoloader | default "lib/markmap-autoloader/index.js" -}}
   {{- dict "Source" $source "Fingerprint" $fingerprint "Minify" true "Defer" true | dict "Page" . "Data" | partial "store/script.html" -}}
 {{- end -}}
