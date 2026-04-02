@@ -1,0 +1,21 @@
+{{- $fingerprint := .Site.Store.Get "fingerprint" -}}
+{{- $cdn := .Site.Store.Get "cdn" | default dict -}}
+
+{{- if .Store.Get "hasMarkmap" -}}
+  {{- /* Component CSS */ -}}
+  {{- $options := dict "Source" "css/markmap.fixit.scss" "Fingerprint" $fingerprint -}}
+  {{- $toCSS := dict "targetPath" "css/markmap.fixit.min.css" "enableSourceMap" true -}}
+  {{- $options = dict "Context" . "ToCSS" $toCSS | merge $options -}}
+  {{- partial "plugin/style.html" $options -}}
+
+  {{- /* Component JS */ -}}
+  {{- $options := dict "targetPath" "js/markmap.fixit.min.js" "minify" hugo.IsProduction -}}
+  {{- if not hugo.IsProduction -}}
+    {{- $options = dict "sourceMap" "inline" | merge $options -}}
+  {{- end -}}
+  {{- dict "Source" "js/markmap.fixit.js" "Build" $options "Fingerprint" $fingerprint "Defer" true | dict "Page" . "Data" | partial "store/script.html" -}}
+
+  {{- /* markmap-autoloader.js */ -}}
+  {{- $source := $cdn.markmapAutoloader | default "lib/markmap-autoloader/index.js" -}}
+  {{- dict "Source" $source "Fingerprint" $fingerprint "Minify" true "Defer" true | dict "Page" . "Data" | partial "store/script.html" -}}
+{{- end -}}

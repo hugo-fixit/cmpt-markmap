@@ -1,10 +1,8 @@
 <!-- markdownlint-disable-file MD033 MD041 -->
 <h1 align="center">cmpt-markmap | FixIt</h1>
 
-<!-- TODO feature image here if needed -->
-
 <div align="center" class="ignore">
-  <p><!-- TODO description here if needed --></p>
+  <p>A Hugo component that brings <a href="https://markmap.js.org/">markmap</a> mind map support to the FixIt theme.</p>
   <a href="/README.md">简体中文</a> |
   <a href="https://fixit.lruihao.cn/zh-cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=chinese_traditional">繁體中文</a> |
   English |
@@ -17,17 +15,16 @@
   <a href="https://fixit.lruihao.cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=japanese">しろうと</a>
 </div>
 
-## Demo
-
-TODO demo here if needed
-
 ## Features
 
-- [ ] Foo
-- [ ] Bar
+- Embed markmap mind maps anywhere via **code blocks** in Markdown, with configurable height
+- Dedicated `markmap` **page layout** with a resizable split pane — article on the left, mind map on the right
+- Custom toolbar with **fullscreen** support
+- Seamlessly integrates with the FixIt theme's **dark mode**
 
 ## Requirements
 
+- Hugo v0.147.7 extended or later.
 - FixIt v0.4.0 or later.
 
 ## Install Component
@@ -83,31 +80,46 @@ In order to inject the partial `{xxx}.fixit.html` into the `custom-assets` throu
 
 [params.customPartials]
 # ... other partials
-head = []
-profile = []
-aside = []
-comment = []
-footer = []
-widgets = []
 assets = [
-  "inject/{xxx}.fixit.html",
+  "inject/cmpt-markmap.fixit.html",
 ]
-postFooterBefore = []
-postFooterAfter = []
 # ... other partials
 ```
 
-TODO configuration here if needed ...
+## Usage
 
-## Use Shortcode
+### Extended Code Block
 
-Here is an example of usage:
+Use a fenced code block with the `markmap` language identifier in any Markdown file. Supports an optional `height` attribute (default `24rem`):
 
-```markdown
-{{< shortcode-xxx >}}
+````markdown
+```markmap {height="400px"}
+# Root
+
+## Branch 1
+
+## Branch 2
+```
+````
+
+### Page Layout
+
+Set `layout: markmap` in the page Front Matter to enable the dedicated split-pane mind map layout:
+
+```yaml
+---
+title: My Mind Map
+layout: markmap
+---
+
+## Branch 1
+
+## Branch 2
 ```
 
 ## References
 
+- [Full Usage Example](markmap.md)
+- [markmap Official Website](https://markmap.js.org/)
 - [Develop Theme Components | FixIt](https://fixit.lruihao.cn/contributing/components/)
 - [How to Develop a Hugo Theme Component | FixIt](https://fixit.lruihao.cn/components/dev-component/)

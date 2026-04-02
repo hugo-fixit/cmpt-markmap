@@ -1,0 +1,11 @@
+{{- $height := .Attributes.height | default "24rem" -}}
+{{- $attrs := printf `style="--markmap-embed-height: %v;"` $height -}}
+<div class="markmap-container" {{ $attrs | safeHTMLAttr }}>
+  <div class="markmap">
+    <script type="text/template">{{ .Inner | replaceRE "</script>" "<\\/script>" | safeHTML }}</script>
+  </div>
+</div>
+{{- .Page.Store.Set "hasMarkmap" true -}}
+{{- if eq hugo.Context.MarkupScope "home" -}}
+  {{- site.Home.Store.Set "hasMarkmap" true -}}
+{{- end -}}

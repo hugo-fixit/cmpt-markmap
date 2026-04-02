@@ -1,0 +1,42 @@
+{{- define "title" -}}
+  {{- cond (.Param "capitalizeTitles") (title .Title) .Title -}}
+  {{- if .Site.Params.withSiteTitle }} {{ .Site.Params.titleDelimiter }} {{ .Site.Title }}{{- end -}}
+{{- end -}}
+
+{{- define "content" -}}
+  {{- $markmapTitle := cond (.Param "capitalizeTitles") (title .Title) .Title -}}
+  {{- $params := partial "function/params.html" -}}
+  {{- $content := .RawContent -}}
+  {{- $content = $content | replaceRE `(?m)^(#{1,5})(\\s+)` `#$1$2` -}}
+  {{- $content = printf "# %s\n\n%s" $markmapTitle $content -}}
+  <article class="page single special markmap-page"{{ with .Params.fromAdapters }} data-adapters="{{ . }}"{{ end }}>
+    <div class="markmap-split" data-markmap-split>
+      <div class="markmap-pane markmap-pane--content">
+        <div class="header">
+          <h1 class="single-title animate__animated animate__pulse animate__faster">{{- $markmapTitle -}}</h1>
+          {{- with $params.subtitle -}}<p class="single-subtitle animate__animated animate__fadeIn">{{ . | $.RenderString }}</p>{{- end -}}
+        </div>
+
+        {{- $contentHTML := dict "Content" .Content "Ruby" $params.ruby "Fraction" $params.fraction "Fontawesome" $params.fontawesome | partial "function/content.html" | safeHTML -}}
+        <div class="content" id="content"{{ with $params.endFlag }} data-end-flag="{{ . }}"{{ end }}>
+          {{- if not $params.password -}}
+            {{- $contentHTML -}}
+          {{- end -}}
+        </div>
+        {{- dict "Content" $contentHTML "Password" $params.password "Message" $params.message "Page" . | partial "plugin/fixit-encryptor.html" -}}
+      </div>
+
+      <div class="markmap-divider" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Resize"></div>
+
+      <div class="markmap-pane markmap-pane--map">
+        {{- if not $params.password -}}
+          <div class="markmap">
+            <script type="text/template">{{ $content | replaceRE "</script>" "<\\/script>" | safeHTML }}</script>
+          </div>
+        {{- end -}}
+      </div>
+    </div>
+  </article>
+  
+  {{- .Store.Set "hasMarkmap" true -}}
+{{- end -}}

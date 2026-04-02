@@ -1,10 +1,8 @@
 <!-- markdownlint-disable-file MD033 MD041 -->
 <h1 align="center">cmpt-markmap | FixIt</h1>
 
-<!-- TODO 如有需要，请在此处添加图片 -->
-
 <div align="center" class="ignore">
-  <p><!-- TODO 如有需要，请在此处添加描述 --></p>
+  <p>一个为 FixIt 主题提供 <a href="https://markmap.js.org/">markmap</a> 思维导图支持的 Hugo 组件。</p>
   简体中文 |
   <a href="https://fixit.lruihao.cn/zh-cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=chinese_traditional">繁體中文</a> |
   <a href="/README.en.md">English</a> |
@@ -17,18 +15,17 @@
   <a href="https://fixit.lruihao.cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=japanese">しろうと</a>
 </div>
 
-## Demo
-
-TODO 如有需要，请在此处添加演示
-
 ## 特性
 
-- [ ] Foo
-- [ ] Bar
+- 支持在任意 Markdown 文件中通过**代码块**嵌入 markmap 思维导图，可自定义高度
+- 提供专属 `markmap` **页面布局**，左侧显示文章内容，右侧展示思维导图，可拖拽调整面板宽度
+- 自定义工具栏，支持**全屏**模式
+- 与 FixIt 主题**深色模式**无缝集成
 
 ## 要求
 
-- FixIt v0.4.0 或更高版本。
+- Hugo v0.147.7 extended 或更高版本
+- FixIt v0.4.0 或更高版本
 
 ## 安装组件
 
@@ -76,38 +73,53 @@ theme = ["FixIt", "cmpt-markmap"]
 
 ## 配置
 
-为了通过 FixIt 主题开放的 [自定义块](https://fixit.lruihao.cn/references/blocks/) 将 `{xxx}.fixit.html` 注入到 `custom-assets` 中，你需要填写以下必要配置：
+为了通过 FixIt 主题开放的 [自定义块](https://fixit.lruihao.cn/references/blocks/) 将 `cmpt-markmap.fixit.html` 注入到 `custom-assets` 中，你需要填写以下必要配置：
 
 ```toml
 [params]
 
 [params.customPartials]
 # ... other partials
-head = []
-profile = []
-aside = []
-comment = []
-footer = []
-widgets = []
 assets = [
-  "inject/{xxx}.fixit.html",
+  "inject/cmpt-markmap.fixit.html",
 ]
-postFooterBefore = []
-postFooterAfter = []
 # ... other partials
 ```
 
-TODO 如有需要，请在此处添加配置...
+## 用法
 
-## 使用 Shortcode
+### 扩展代码块
 
-以下是一个使用示例：
+在任意 Markdown 文件中，以 `markmap` 为语言标识使用围栏代码块，支持 `height` 属性（默认 `24rem`）：
 
-```markdown
-{{< shortcode-xxx >}}
+````markdown
+```markmap {height="400px"}
+# 根节点
+
+## 分支一
+
+## 分支二
+```
+````
+
+### 页面布局
+
+在页面 Front Matter 中设置 `layout: markmap`，即可启用专属的分栏思维导图页面布局：
+
+```md
+---
+title: 我的思维导图
+layout: markmap
+---
+
+## 分支一
+
+## 分支二
 ```
 
 ## 参考
 
+- [markmap 完整用法示例](markmap.md)
+- [markmap 官网](https://markmap.js.org/)
 - [开发主题组件 | FixIt](https://fixit.lruihao.cn/contributing/components/)
 - [如何开发 Hugo 主题组件 | FixIt](https://fixit.lruihao.cn/components/dev-component/)
