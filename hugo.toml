@@ -1,3 +1,9 @@
+[params]
+
+# Markmap configuration for layout (in snake_case)
+# https://markmap.js.org/docs/json-options#option-list
+[params.markmap]
+color_freeze_level = 0
 
 [module]
 

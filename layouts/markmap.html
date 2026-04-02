@@ -8,7 +8,13 @@
   {{- $params := partial "function/params.html" -}}
   {{- $content := .RawContent -}}
   {{- $content = $content | replaceRE `(?m)^(#{1,5})(\\s+)` `#$1$2` -}}
-  {{- $content = printf "# %s\n\n%s" $markmapTitle $content -}}
+  {{- $frontmatterData := dict "title" $markmapTitle -}}
+  {{- with .Param "markmap" -}}
+    {{- $frontmatterData = merge $frontmatterData (dict "markmap" .) -}}
+  {{- end -}}
+  {{- $frontmatterData = partial "function/snake2camel.html" $frontmatterData -}}
+  {{- $frontmatter := transform.Remarshal "yaml" $frontmatterData -}}
+  {{- $content = printf "---\n%s\n---\n\n%s" $frontmatter $content -}}
   <article class="page single special markmap-page"{{ with .Params.fromAdapters }} data-adapters="{{ . }}"{{ end }}>
     <div class="markmap-split" data-markmap-split>
       <div class="markmap-pane markmap-pane--content">

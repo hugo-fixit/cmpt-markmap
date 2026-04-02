@@ -26,7 +26,10 @@
 
 ## 要求
 
-- FixIt v0.4.5 或更高版本
+- FixIt v1.0.0 或更高版本
+
+> [!NOTE]
+> 依赖 FixIt v1.0.0 是因为用到了 `function/snake2camel.html`，用于将主题配置文件 / 页面 Front Matter 中的 `snake_case` 选项转换为 markmap 所需的 `camelCase`。若你使用的是 FixIt v0.4.5，也可以通过将 FixIt 中的 `layouts/_partials/function/snake2camel.html` 复制到自己的项目中来使用本组件。
 
 ## 安装组件
 
@@ -87,6 +90,22 @@ assets = [
 # ... other partials
 ```
 
+### markmap 选项
+
+- 主题配置文件和页面 Front Matter 中使用 `snake_case`。
+- 扩展 `markmap` 代码块内的  Front Matter 使用 `camelCase`（与 markmap 官方文档一致）。
+
+全局默认配置：
+
+```toml
+[params]
+
+# Markmap configuration for layout (in snake_case)
+# https://markmap.js.org/docs/json-options#option-list
+[params.markmap]
+color_freeze_level = 0
+```
+
 ## 用法
 
 ### 扩展代码块
@@ -94,8 +113,24 @@ assets = [
 在任意 Markdown 文件中，以 `markmap` 为语言标识使用围栏代码块，支持 `height` 属性（默认 `24rem`）：
 
 ````markdown
-```markmap {height="400px"}
+```markmap
 # 根节点
+
+## 分支一
+
+## 分支二
+```
+````
+
+或者带有 Front Matter 配置：
+
+````markdown
+```markmap {height="400px"}
+---
+title: 根节点
+markmap:
+  colorFreezeLevel: 2
+---
 
 ## 分支一
 
@@ -111,6 +146,8 @@ assets = [
 ---
 title: 我的思维导图
 layout: markmap
+markmap:
+  color_freeze_level: 2
 ---
 
 ## 分支一

@@ -3,14 +3,20 @@ title: Markmap
 layout: markmap
 math:
   enable: true
+# Markmap configuration (in snake_case)
+# https://markmap.js.org/docs/json-options#option-list
+markmap:
+  color_freeze_level: 2
+---
+
+code block usage:
+
+```markmap {height="400px"}
+---
+title: Root
 markmap:
   colorFreezeLevel: 2
 ---
-
-## Usage in Markdown
-
-```markmap {height="400px"}
-# Root
 
 ## Child1
 

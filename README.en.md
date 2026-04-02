@@ -26,7 +26,10 @@
 
 ## Requirements
 
-- FixIt v0.4.5 or later.
+- FixIt v1.0.0 or later.
+
+> [!NOTE]
+> This component uses `function/snake2camel.html` to convert `snake_case` options (theme config / page front matter) to the `camelCase` options required by markmap. If you are using FixIt v0.4.5, you can still use this component by copying `layouts/_partials/function/snake2camel.html` from FixIt into your own project.
 
 ## Install Component
 
@@ -87,6 +90,22 @@ assets = [
 # ... other partials
 ```
 
+### markmap Options
+
+- In the theme config file and page front matter, use snake_case.
+- In the front matter inside an extended `markmap` code block, use camelCase (same as the official markmap docs).
+
+Global default configuration:
+
+```toml
+[params]
+
+# Markmap configuration for layout (in snake_case)
+# https://markmap.js.org/docs/json-options#option-list
+[params.markmap]
+color_freeze_level = 0
+```
+
 ## Usage
 
 ### Extended Code Block
@@ -94,8 +113,24 @@ assets = [
 Use a fenced code block with the `markmap` language identifier in any Markdown file. Supports an optional `height` attribute (default `24rem`):
 
 ````markdown
-```markmap {height="400px"}
+```markmap
 # Root
+
+## Branch 1
+
+## Branch 2
+```
+````
+
+Or with front matter configuration:
+
+````markdown
+```markmap {height="400px"}
+---
+title: Root
+markmap:
+  colorFreezeLevel: 2
+---
 
 ## Branch 1
 
