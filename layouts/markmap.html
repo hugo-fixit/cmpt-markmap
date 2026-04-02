@@ -15,7 +15,7 @@
   {{- $frontmatterData = partial "function/snake2camel.html" $frontmatterData -}}
   {{- $frontmatter := transform.Remarshal "yaml" $frontmatterData -}}
   {{- $content = printf "---\n%s\n---\n\n%s" $frontmatter $content -}}
-  <article class="page single special markmap-page"{{ with .Params.fromAdapters }} data-adapters="{{ . }}"{{ end }}>
+  <article class="page single special markmap-page">
     <div class="markmap-split" data-markmap-split>
       <div class="markmap-pane markmap-pane--content">
         <div class="header">
@@ -23,23 +23,17 @@
           {{- with $params.subtitle -}}<p class="single-subtitle animate__animated animate__fadeIn">{{ . | $.RenderString }}</p>{{- end -}}
         </div>
 
-        {{- $contentHTML := dict "Content" .Content "Ruby" $params.ruby "Fraction" $params.fraction "Fontawesome" $params.fontawesome | partial "function/content.html" | safeHTML -}}
-        <div class="content" id="content"{{ with $params.endFlag }} data-end-flag="{{ . }}"{{ end }}>
-          {{- if not $params.password -}}
-            {{- $contentHTML -}}
-          {{- end -}}
+        <div class="content" id="content">
+          {{- dict "Content" .Content "Ruby" $params.ruby "Fraction" $params.fraction "Fontawesome" $params.fontawesome | partial "function/content.html" | safeHTML -}}
         </div>
-        {{- dict "Content" $contentHTML "Password" $params.password "Message" $params.message "Page" . | partial "plugin/fixit-encryptor.html" -}}
       </div>
 
       <div class="markmap-divider" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Resize"></div>
 
       <div class="markmap-pane markmap-pane--map">
-        {{- if not $params.password -}}
-          <div class="markmap">
-            <script type="text/template">{{ $content | replaceRE "</script>" "<\\/script>" | safeHTML }}</script>
-          </div>
-        {{- end -}}
+        <div class="markmap">
+          <script type="text/template">{{ $content | replaceRE "</script>" "<\\/script>" | safeHTML }}</script>
+        </div>
       </div>
     </div>
   </article>
