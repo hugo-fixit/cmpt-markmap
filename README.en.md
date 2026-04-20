@@ -12,9 +12,9 @@
   <a href="https://fixit.lruihao.cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=russian">Русский язык</a> |
   <a href="https://fixit.lruihao.cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=spanish">Español</a> |
   <a href="https://fixit.lruihao.cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=hindi">हिन्दी</a> |
-  <a href="https://fixit.lruihao.cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=deutsch">deutsch</a> |
+  <a href="https://fixit.lruihao.cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=deutsch">Deutsch</a> |
   <a href="https://fixit.lruihao.cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=korean">한국어</a> |
-  <a href="https://fixit.lruihao.cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=japanese">しろうと</a>
+  <a href="https://fixit.lruihao.cn/ecosystem/hugo-fixit/cmpt-markmap/?lang=japanese">日本語</a>
 </div>
 
 ## Features
