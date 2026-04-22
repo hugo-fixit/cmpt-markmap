@@ -1,5 +1,6 @@
 @import "_variables";
-@import '_core/_mixin';
+@import 'core/functions';
+@import 'core/mixins';
 
 // Style of layout markmap
 .special.markmap-page {
@@ -40,7 +41,7 @@
     display: flex;
     gap: 0;
     align-items: flex-start;
-    border-bottom: 1px solid fixit-var(global-border-color-light);
+    border-bottom: 1px solid fi-var(global-border-color-light);
   }
 
   .markmap-pane--content {
@@ -82,13 +83,13 @@
     cursor: col-resize;
     touch-action: none;
     height: 100%;
-    background: linear-gradient(to left, transparent 50%, fixit-var(divider-color, fixit-var(global-border-color-light)) 50%);
+    background: linear-gradient(to left, transparent 50%, fi-var(divider-color, fi-var(global-border-color-light)) 50%);
     box-shadow: none;
     transition: background 0.2s ease;
 
     &:hover,
     &.is-dragging {
-      @include set-fixit-var(divider-color, fixit-var(primary));
+      @include set-fi-var(divider-color, fi-var(primary));
     }
   }
 
@@ -107,7 +108,7 @@
 
     &:fullscreen,
     &:-webkit-full-screen {
-      background-color: fixit-var(global-background-color);
+      background-color: fi-var(global-background-color);
     }
 
     &.is-fullscreen {
@@ -195,7 +196,7 @@
     height: var(--markmap-embed-height);
     width: 100%;
     position: relative;
-    border: 1px solid fixit-var(global-border-color-light);
+    border: 1px solid fi-var(global-border-color-light);
     @include border-radius;
 
     > svg {
@@ -205,7 +206,7 @@
 
     &.markmap:fullscreen,
     &.markmap:-webkit-full-screen {
-      background-color: fixit-var(global-background-color);
+      background-color: fi-var(global-background-color);
     }
 
     &.is-fullscreen {

@@ -3,7 +3,7 @@
 
 {{- if .Store.Get "hasMarkmap" -}}
   {{- /* Component CSS */ -}}
-  {{- $options := dict "Source" "css/markmap.fixit.scss" "Fingerprint" $fingerprint -}}
+  {{- $options := dict "Source" "scss/markmap.fixit.scss" "Fingerprint" $fingerprint -}}
   {{- $toCSS := dict "targetPath" "css/markmap.fixit.min.css" "enableSourceMap" true -}}
   {{- $options = dict "Context" . "ToCSS" $toCSS | merge $options -}}
   {{- partial "plugin/style.html" $options -}}
