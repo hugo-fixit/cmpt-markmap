@@ -77,7 +77,11 @@ const createFitIcon = (): SVGElement => {
 const fitMarkmap = (root: ParentNode) => {
   const el = root.querySelector<HTMLElement>('.markmap');
   const mm = el?.__markmap || el?.querySelector<SVGElement>('svg')?.__markmap;
-  if (mm?.fit) mm.fit();
+  if (!mm?.fit) return;
+  const rect = getSvgElement(mm)?.getBoundingClientRect();
+  // Skip when the SVG has no laid-out size yet (e.g. mid collapse/expand) to avoid NaN transforms.
+  if (!rect || rect.width < 1 || rect.height < 1) return;
+  mm.fit();
 };
 
 // ─── Theme sync ───
@@ -196,6 +200,7 @@ const patchToolbarCreate = (Toolbar: ToolbarFactory) => {
 /**
  * Make the content/map panes of `[data-markmap-split]` resizable.
  * Width ratio is persisted per path and restored on load.
+ * Supports RTL: drag math and arrow keys follow the content pane side.
  */
 const initSplit = (split: HTMLElement) => {
   if (!split || split.__fixitSplitInited) return;
@@ -203,10 +208,19 @@ const initSplit = (split: HTMLElement) => {
 
   const divider = split.querySelector<HTMLElement>('.markmap-divider');
   const mapPane = split.querySelector<HTMLElement>('.markmap-pane--map');
+  const toggleBtn = split.querySelector<HTMLElement>('.markmap-pane-toggle');
   if (!divider || !mapPane) return;
 
+  const mediaQuery = window.matchMedia('(max-width: 960px)');
+  const isRTL = () => getComputedStyle(split).direction === 'rtl';
+  const isCollapsed = () => split.classList.contains('is-content-collapsed');
+  const canResize = () => !mediaQuery.matches && !isCollapsed();
+
   const storageKey = `fixit-markmap-split:${location.pathname}`;
+  const collapsedKey = `fixit-markmap-split-collapsed:${location.pathname}`;
+
   const applyRatio = () => {
+    if (isCollapsed()) return;
     const ratio = Number(localStorage.getItem(storageKey));
     if (!Number.isFinite(ratio) || ratio <= 0 || ratio >= 1) return;
     const rect = split.getBoundingClientRect();
@@ -216,13 +230,17 @@ const initSplit = (split: HTMLElement) => {
     fitMarkmap(split);
   };
 
-  const mediaQuery = window.matchMedia('(max-width: 960px)');
   if (!mediaQuery.matches) applyRatio();
 
+  // In LTR the content pane is on the left; in RTL it is on the right.
   const setWidthFromClientX = (clientX: number) => {
     const rect = split.getBoundingClientRect();
     const dividerRect = divider.getBoundingClientRect();
-    const contentWidth = clamp(clientX - rect.left, 320, rect.width - dividerRect.width - 320);
+    const contentWidth = clamp(
+      isRTL() ? rect.right - clientX : clientX - rect.left,
+      320,
+      rect.width - dividerRect.width - 320,
+    );
     const mapWidth = rect.width - dividerRect.width - contentWidth;
     split.style.setProperty('--markmap-pane-width', `${Math.round(mapWidth)}px`);
     fitMarkmap(split);
@@ -236,6 +254,25 @@ const initSplit = (split: HTMLElement) => {
     const ratio = mapWidth / rect.width;
     localStorage.setItem(storageKey, String(ratio));
   };
+
+  const setContentCollapsed = (collapsed: boolean) => {
+    split.classList.toggle('is-content-collapsed', collapsed);
+    toggleBtn?.setAttribute('aria-expanded', String(!collapsed));
+    toggleBtn?.setAttribute('aria-label', collapsed ? 'Expand content pane' : 'Collapse content pane');
+    localStorage.setItem(collapsedKey, collapsed ? '1' : '0');
+    // Wait for the layout to settle before refitting, otherwise markmap reads a zero-size SVG.
+    requestAnimationFrame(() => {
+      if (!collapsed) applyRatio();
+      fitMarkmap(split);
+    });
+  };
+
+  if (toggleBtn) {
+    // Keep the click from starting a divider drag.
+    toggleBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+    toggleBtn.addEventListener('click', () => setContentCollapsed(!isCollapsed()));
+  }
+  if (localStorage.getItem(collapsedKey) === '1') setContentCollapsed(true);
 
   let dragging = false;
   let originalCursor = '';
@@ -251,7 +288,7 @@ const initSplit = (split: HTMLElement) => {
   };
 
   divider.addEventListener('pointerdown', (e: PointerEvent) => {
-    if (mediaQuery.matches) return;
+    if (!canResize()) return;
     dragging = true;
     divider.classList.add('is-dragging');
     originalCursor = document.body.style.cursor;
@@ -271,9 +308,9 @@ const initSplit = (split: HTMLElement) => {
   divider.addEventListener('pointercancel', () => stopDragging());
   divider.addEventListener('lostpointercapture', () => stopDragging());
 
-  // Keyboard resize: ← widens the map pane, → narrows it.
+  // Keyboard resize: the key pointing at the content pane widens the map.
   divider.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (mediaQuery.matches) return;
+    if (!canResize()) return;
     const rect = split.getBoundingClientRect();
     const dividerWidth = divider.getBoundingClientRect().width;
     const maxMapWidth = rect.width - dividerWidth - 320;
@@ -281,12 +318,15 @@ const initSplit = (split: HTMLElement) => {
     const computed = getComputedStyle(split).getPropertyValue('--markmap-pane-width').trim();
     const current = computed.endsWith('px') ? Number(computed.slice(0, -2)) : mapPane.getBoundingClientRect().width;
     if (!Number.isFinite(current)) return;
-    if (e.key === 'ArrowLeft') {
+    // LTR: map is on the right, ← widens it. RTL: map is on the left, → widens it.
+    const widenKey = isRTL() ? 'ArrowRight' : 'ArrowLeft';
+    const narrowKey = isRTL() ? 'ArrowLeft' : 'ArrowRight';
+    if (e.key === widenKey) {
       e.preventDefault();
       split.style.setProperty('--markmap-pane-width', `${clamp(current + step, 320, maxMapWidth)}px`);
       persistRatio();
       fitMarkmap(split);
-    } else if (e.key === 'ArrowRight') {
+    } else if (e.key === narrowKey) {
       e.preventDefault();
       split.style.setProperty('--markmap-pane-width', `${clamp(current - step, 320, maxMapWidth)}px`);
       persistRatio();
@@ -295,7 +335,7 @@ const initSplit = (split: HTMLElement) => {
   });
 
   window.addEventListener('resize', () => {
-    if (mediaQuery.matches) return;
+    if (!canResize()) return;
     applyRatio();
   });
 };

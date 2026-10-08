@@ -84,9 +84,17 @@
     cursor: col-resize;
     touch-action: none;
     height: 100%;
-    background: linear-gradient(to left, transparent 50%, fi-var(divider-color, fi-var(global-border-color-light)) 50%);
+    position: relative;
+    background: linear-gradient(
+      to right,
+      transparent calc(50% - 1px),
+      fi-var(divider-color, fi-var(global-border-color-light)) calc(50% - 1px),
+      fi-var(divider-color, fi-var(global-border-color-light)) calc(50% + 1px),
+      transparent calc(50% + 1px)
+    );
     box-shadow: none;
     transition: background 0.2s ease;
+    @include z-index(base, 1);
 
     &:hover,
     &.is-dragging {
@@ -94,9 +102,70 @@
     }
   }
 
+  .markmap-pane-toggle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 1px solid fi-var(global-border-color);
+    border-radius: 50%;
+    background-color: fi-var(global-background-color);
+    color: fi-var(global-font-secondary-color);
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      color: fi-var(primary);
+      border-color: fi-var(primary);
+    }
+
+    // Chevron points at the content pane to collapse it.
+    html[dir='rtl'] & {
+      transform: scaleX(-1);
+    }
+  }
+
+  .markmap-split.is-content-collapsed {
+    .markmap-pane--content {
+      display: none;
+    }
+
+    .markmap-pane--map {
+      flex: 1 1 auto;
+      width: auto;
+    }
+
+    .markmap-divider {
+      cursor: default;
+      flex: 0 0 0.25rem;
+      // Leave room for the centered toggle so it is not clipped at the split edge.
+      margin-inline-start: 0.875rem;
+
+      &:hover {
+        @include set-fi-var(divider-color, fi-var(global-border-color-light));
+      }
+    }
+
+    // Flip the chevron toward the map (expand direction).
+    .markmap-pane-toggle {
+      transform: scaleX(-1);
+    }
+
+    html[dir='rtl'] & .markmap-pane-toggle {
+      transform: none;
+    }
+  }
+
   .markmap {
     height: 100%;
     position: relative;
+    direction: ltr;
 
     > svg {
       width: 100%;
@@ -189,6 +258,7 @@
     height: var(--markmap-embed-height);
     width: 100%;
     position: relative;
+    direction: ltr;
     border: 1px solid fi-var(global-border-color-light);
     @include border-radius;
 
