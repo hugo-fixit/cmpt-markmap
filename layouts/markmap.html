@@ -1,18 +1,19 @@
 {{- define "title" -}}
-  {{- cond (.Param "capitalizeTitles") (title .Title) .Title -}}
-  {{- if .Site.Params.withSiteTitle }} {{ .Site.Params.titleDelimiter }} {{ .Site.Title }}{{- end -}}
+  {{- cond (.Param "capitalize_titles") (title .Title) .Title -}}
+  {{- if .Site.Params.with_site_title }} {{ .Site.Params.title_delimiter }} {{ .Site.Title }}{{- end -}}
 {{- end -}}
 
 {{- define "content" -}}
-  {{- $markmapTitle := cond (.Param "capitalizeTitles") (title .Title) .Title -}}
-  {{- $params := partial "function/params.html" -}}
+  {{- $markmapTitle := cond (.Param "capitalize_titles") (title .Title) .Title -}}
   {{- $content := .RawContent -}}
-  {{- $content = $content | replaceRE `(?m)^(#{1,5})(\\s+)` `#$1$2` -}}
+  {{- $content = $content | replaceRE `(?m)^(#{1,5})(\s+)` `#$1$2` -}}
   {{- $frontmatterData := dict "title" $markmapTitle -}}
   {{- with .Param "markmap" -}}
-    {{- $frontmatterData = merge $frontmatterData (dict "markmap" .) -}}
+    {{- if reflect.IsMap . -}}
+      {{- $frontmatterData = merge $frontmatterData (dict "markmap" .) -}}
+    {{- end -}}
   {{- end -}}
-  {{- $frontmatterData = partial "function/snake2camel.html" $frontmatterData -}}
+  {{- $frontmatterData = partial "function/camel-case-keys.html" $frontmatterData -}}
   {{- $frontmatter := transform.Remarshal "yaml" $frontmatterData -}}
   {{- $content = printf "---\n%s\n---\n\n%s" $frontmatter $content -}}
   <article class="page single special markmap-page">
@@ -20,11 +21,11 @@
       <div class="markmap-pane markmap-pane--content">
         <div class="header">
           <h1 class="single-title animate__animated animate__pulse animate__faster">{{- $markmapTitle -}}</h1>
-          {{- with $params.subtitle -}}<p class="single-subtitle animate__animated animate__fadeIn">{{ . | $.RenderString }}</p>{{- end -}}
+          {{- with .Param "subtitle" -}}<p class="single-subtitle animate__animated animate__fadeIn">{{ . | $.RenderString }}</p>{{- end -}}
         </div>
 
         <div class="content" id="content">
-          {{- dict "Content" .Content "Ruby" $params.ruby "Fraction" $params.fraction "Fontawesome" $params.fontawesome | partial "function/content.html" | safeHTML -}}
+          {{- dict "Content" .Content "Ruby" (.Param "ruby") "Fraction" (.Param "fraction") "Fontawesome" (.Param "fontawesome") | partial "function/content.html" | safeHTML -}}
         </div>
       </div>
 
@@ -37,6 +38,6 @@
       </div>
     </div>
   </article>
-  
+
   {{- .Store.Set "hasMarkmap" true -}}
 {{- end -}}

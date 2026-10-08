@@ -1,10 +1,11 @@
-@import "_variables";
-@import 'core/functions';
-@import 'core/mixins';
+@use "core/functions" as *;
+@use "core/mixins" as *;
+@use "variables" as *;
 
 // Style of layout markmap
 .special.markmap-page {
   flex: 1;
+  max-width: 100% !important;
   align-self: stretch;
 
   html:has(&) {
@@ -102,22 +103,14 @@
       height: 100%;
     }
 
-    &:fullscreen > svg {
-      height: 100%;
-    }
-
-    &:fullscreen,
-    &:-webkit-full-screen {
-      background-color: fi-var(global-background-color);
-    }
-
     &.is-fullscreen {
       position: fixed;
       inset: 0;
       width: 100vw;
       height: 100dvh;
       margin: 0;
-      @include z-index(fixed, 1);
+      background-color: fi-var(global-background-color);
+      @include z-index(fixed, 1000);
     }
   }
 
@@ -204,18 +197,16 @@
       height: 100%;
     }
 
-    &.markmap:fullscreen,
-    &.markmap:-webkit-full-screen {
-      background-color: fi-var(global-background-color);
-    }
-
     &.is-fullscreen {
       position: fixed;
       inset: 0;
       width: 100vw;
       height: 100dvh;
       margin: 0;
-      @include z-index(fixed, 1);
+      border: none;
+      background-color: fi-var(global-background-color);
+      @include border-radius(0);
+      @include z-index(fixed, 1000);
     }
   }
 }

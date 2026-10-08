@@ -29,7 +29,7 @@
 - FixIt v1.0.0 or later.
 
 > [!NOTE]
-> This component uses `function/snake2camel.html` to convert `snake_case` options (theme config / page front matter) to the `camelCase` options required by markmap. If you are using FixIt v0.4.5, you can still use this component by copying `layouts/_partials/function/snake2camel.html` from FixIt into your own project.
+> This component uses `function/camel-case-keys.html` to convert `snake_case` options (theme config / page front matter) to the `camelCase` options required by markmap.
 
 ## Install Component
 
@@ -82,7 +82,7 @@ In order to inject the partial `{xxx}.fixit.html` into the `custom-assets` throu
 ```toml
 [params]
 
-[params.customPartials]
+[params.custom_partials]
 # ... other partials
 assets = [
   "inject/cmpt-markmap.fixit.html",

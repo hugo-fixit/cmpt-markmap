@@ -29,7 +29,7 @@
 - FixIt v1.0.0 或更高版本
 
 > [!NOTE]
-> 依赖 FixIt v1.0.0 是因为用到了 `function/snake2camel.html`，用于将主题配置文件 / 页面 Front Matter 中的 `snake_case` 选项转换为 markmap 所需的 `camelCase`。若你使用的是 FixIt v0.4.5，也可以通过将 FixIt 中的 `layouts/_partials/function/snake2camel.html` 复制到自己的项目中来使用本组件。
+> 依赖 `function/camel-case-keys.html`，用于将主题配置文件 / 页面 Front Matter 中的 `snake_case` 选项转换为 markmap 所需的 `camelCase`。
 
 ## 安装组件
 
@@ -82,7 +82,7 @@ theme = ["FixIt", "cmpt-markmap"]
 ```toml
 [params]
 
-[params.customPartials]
+[params.custom_partials]
 # ... other partials
 assets = [
   "inject/cmpt-markmap.fixit.html",

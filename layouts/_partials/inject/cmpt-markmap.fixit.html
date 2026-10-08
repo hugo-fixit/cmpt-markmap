@@ -19,6 +19,6 @@
     markmap-autoloader
     from cdn: https://cdn.jsdelivr.net/npm/markmap-autoloader
   */ -}}
-  {{- $source := $cdn.markmapAutoloader | default "lib/markmap-autoloader/index.js" -}}
+  {{- $source := $cdn.markmap_autoloader | default $cdn.markmapAutoloader | default "lib/markmap-autoloader/index.js" -}}
   {{- dict "Source" $source "Fingerprint" $fingerprint "Minify" true "Defer" true | dict "Page" . "Data" | partial "store/script.html" -}}
 {{- end -}}
